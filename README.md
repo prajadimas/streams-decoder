@@ -1,4 +1,4 @@
-# StreamsDecoder
+# Streams Decoder
 
 ## Preparation
 Install rust if you don't have it already, find the instructions here https://www.rust-lang.org/tools/install
@@ -10,12 +10,12 @@ Make sure you also have the build dependencies installed, if not run:
 `sudo apt update`  
 
 
-## Installing streams_decoder
+## Installing the Streams Decoder
 Download streams_decoder server:  
-`git clone https://github.com/AleBuser/streams_decoder`  
-`cd streams_decoder`  
+`git clone https://github.com/iot2tangle/streams-decoder`  
+`cd streams-decoder`  
   
-Configure the Streams Gateway:  
+Configure the Decoder:  
 `nano config.json`  
  
 Set the *node* to a high-throughput node to make request response faster. 
@@ -27,9 +27,7 @@ Run the Server:
 `cargo run --release`  
 This starts the server  
 
-To decode a streams channel send the channel address in a GET request as *text/plain* in the body, the endpoint is */decode_channel*:  
+To decode a streams channel call the */decode_channel/<channel_id>* endpoint setting the *channel_id* for example:    
 `  
-curl --location --request GET 'localhost:8585/decode_channel' \
---header 'Content-Type: text/plain' \
---data-raw '1c6fddc2f0344892403ebc4fb6b94c4b308147c9fddb6340a27c89b7c4a28c390000000000000000'
+curl --location --request GET 'localhost:8585/decode_channel/64e592476ed7619d04526f6360f150d4bce63046511dde3f8665e5aec6b51ffc0000000000000000:78829daa792010edd2c7dbfb'
 `
