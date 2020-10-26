@@ -1,4 +1,4 @@
 {
-    "endpoint": "127.0.0.1:1080",
+    "endpoint": "127.0.0.1:8585",
     "node": "https://nodes.thetangle.org:443"
 }
