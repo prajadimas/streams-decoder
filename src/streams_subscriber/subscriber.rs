@@ -4,10 +4,7 @@
 use crate::streams_subscriber::random_seed;
 
 use base64::{decode_config, URL_SAFE_NO_PAD};
-use iota_streams::app::transport::tangle::{
-    client::{Client, SendTrytesOptions},
-    PAYLOAD_BYTES,
-};
+use iota_streams::app::transport::tangle::{client::Client, PAYLOAD_BYTES};
 use iota_streams::app_channels::api::tangle::{Address, Subscriber};
 
 use anyhow::Result;
@@ -36,15 +33,7 @@ impl Channel {
             Some(seed) => seed,
             None => random_seed(),
         };
-        let send_opt = SendTrytesOptions::default();
-        let client: Client = Client::new(
-            send_opt,
-            iota::client::ClientBuilder::new()
-                .node(&node)
-                .unwrap()
-                .build()
-                .unwrap(),
-        );
+        let client: Client = Client::new_from_url(&node);
         let subscriber = Subscriber::new(&seed, "utf-8", PAYLOAD_BYTES, client);
 
         let ann_link = match Address::from_str(&channel_address, &announcement_tag) {

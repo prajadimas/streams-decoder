@@ -13,8 +13,7 @@ path = "src/lib.rs"
 [dependencies]
 failure = "0.1.7"
 anyhow = { version = "1.0", default-features = false }
-iota-streams = { git = "https://github.com/iotaledger/streams"}
-iota-core = { git = "https://github.com/iotaledger/iota.rs", rev = "0ad8e7f" }
+iota-streams = { git = "https://github.com/iotaledger/streams", branch = "develop" }
 handlebars = "3.1.0"
 serde = {version="1.0.110", features = ["derive"] }
 serde_derive = "1.0.110"
