@@ -3,9 +3,10 @@
 //!
 use crate::streams_subscriber::random_seed;
 
-use base64::{decode_config, URL_SAFE_NO_PAD};
 use iota_streams::app::transport::tangle::{client::Client, PAYLOAD_BYTES};
 use iota_streams::app_channels::api::tangle::{Address, Subscriber};
+
+use base64::{decode_config, URL_SAFE_NO_PAD};
 
 use anyhow::Result;
 
@@ -36,14 +37,9 @@ impl Channel {
         let client: Client = Client::new_from_url(&node);
         let subscriber = Subscriber::new(&seed, "utf-8", PAYLOAD_BYTES, client);
 
-        let ann_link = match Address::from_str(&channel_address, &announcement_tag) {
-            Ok(v) => v,
-            Err(_) => Address::default(),
-        };
-
         Self {
             subscriber: subscriber,
-            announcement_link: ann_link,
+            announcement_link: Address::from_str(&channel_address, &announcement_tag).unwrap(),
             subscription_link: Address::default(),
             channel_address: channel_address,
         }
@@ -80,7 +76,7 @@ impl Channel {
     ///
     /// Generates the next message in the channels
     ///
-    pub fn get_next_message(&mut self) -> Vec<String> {
+    pub fn get_next_message(&mut self) -> Option<Vec<String>> {
         let mut ids: Vec<String> = vec![];
 
         let mut msgs = self.subscriber.fetch_next_msgs();
@@ -97,7 +93,7 @@ impl Channel {
             }
         }
 
-        ids
+        Some(ids)
     }
 }
 

@@ -41,8 +41,13 @@ pub async fn decode_channel(
             match subscriber.connect() {
                 Ok(_) => {
                     let msg_list = match read_all_public(&mut subscriber).await {
-                        Ok(list) => Some(list),
-                        Err(_) => None,
+                        Some(list) => Some(list),
+                        None => {
+                            return Ok(HttpResponse::Ok().json(ResponseList {
+                                status: "Error: Could connect To Tangle".to_string(),
+                                messages: vec![],
+                            }));
+                        }
                     };
 
                     if msg_list.is_none() {
@@ -58,6 +63,7 @@ pub async fn decode_channel(
                     }));
                 }
                 Err(e) => {
+                    println!("ERR");
                     return Ok(HttpResponse::Ok().json(ResponseList {
                         status: format!("Error: {}", e.to_string()),
                         messages: vec![],
@@ -69,13 +75,22 @@ pub async fn decode_channel(
     }
 }
 
-async fn read_all_public(subscriber: &mut Channel) -> Result<Vec<String>> {
-    let tag_list = subscriber.get_next_message();
+async fn read_all_public(subscriber: &mut Channel) -> Option<Vec<String>> {
+    let tag_list = match subscriber.get_next_message() {
+        Some(v) => v,
+        None => {
+            return None;
+        }
+    };
 
     let mut msg_list: Vec<String> = vec![];
     for signed_message_tag in tag_list {
+        let signed_packet_tag: String = signed_message_tag;
         let msgs: Vec<(Option<String>, Option<String>)> =
-            subscriber.read_signed(signed_message_tag)?;
+            match subscriber.read_signed(signed_packet_tag) {
+                Ok(m) => m,
+                Err(_) => return None,
+            };
         for (msg_p, _msg_m) in msgs {
             match msg_p {
                 None => continue,
@@ -83,5 +98,5 @@ async fn read_all_public(subscriber: &mut Channel) -> Result<Vec<String>> {
             }
         }
     }
-    Ok(msg_list)
+    Some(msg_list)
 }
